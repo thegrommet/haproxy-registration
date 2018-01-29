@@ -20,5 +20,17 @@
   "bugs": {
     "url": "https://github.com/thegrommet/haproxy-registration/issues"
   },
-  "homepage": "https://github.com/thegrommet/haproxy-registration#readme"
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 8
+    },
+    "env": {
+      "node": true
+    }
+  },
+  "homepage": "https://github.com/thegrommet/haproxy-registration#readme",
+  "dependencies": {
+    "haproxy": "^0.3.0",
+    "yargs": "^11.0.0"
+  }
 }
