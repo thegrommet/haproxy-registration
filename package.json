@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/thegrommet/haproxy-registration#readme",
   "dependencies": {
+    "async-main": "^1.0.1",
     "haproxy": "^0.3.0",
     "yargs": "^11.0.0"
   }

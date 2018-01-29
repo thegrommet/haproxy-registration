@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+
+const main = require('async-main').default;
 const argv = require('yargs')
     .option('host', {
         alias: 'h',
@@ -13,7 +15,5 @@ const argv = require('yargs')
     })
     .argv;
 
-main(argv);
-
-async function main(argv) {
-}
+main(async function main(argv) {
+})
