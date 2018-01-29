@@ -5,13 +5,16 @@ const argv = require('yargs')
     .option('host', {
         alias: 'h',
         description: 'HAProxy host',
-        demandOption: true
+        demandOption: true,
+        requiresArg: true,
+        type: 'string'
     })
     .option('port', {
         alias: 'p',
         description: 'HAProxy port',
         default: 1337,
-        coerce: Number
+        requiresArg: true,
+        type: 'number'
     })
     .argv;
 
