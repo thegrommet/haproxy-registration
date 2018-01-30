@@ -38,15 +38,15 @@ main(async function main() {
     
     const servers = await getServers(argv.host, argv.port, argv.backend)
     if (servers.find(e => e.srv_addr == ip)) {
-        console.log(`${ip} already registered`)
+        debug(`${ip} already registered`)
     } else {
-        console.log(`registering ${ip}`)
         const slot = findSlot(servers)
         debug("found slot", slot)
+        console.log(`registering ${ip} as ${slot.be_name}/${slot.srv_name}`)
         if (!slot) throw new Error(`Could not find free slot for ${ip} in backend ${argv.backend}`)
         const resp = await haproxy(argv.host, argv.port, `set server ${argv.backend}/${slot.srv_name} addr ${ip}`)
         debug("set server response", resp)
-        const resp2 = await haproxy(argv.host, argv.port, `enable server ${argv.backend}/${slot.srv_name}`)
+        const resp2 = await haproxy(argv.host, argv.port, `set server ${argv.backend}/${slot.srv_name} state ready`)
         debug("enable server response", resp2)
     }
 })
@@ -88,8 +88,14 @@ async function getServers(host, port, backend) {
 
 function findSlot(servers) {
     return servers.find(e => {
-        if (e.srv_admin_state != 0 && e.srv_time_since_last_change > 300) return true
-        if (e.srv_admin_state & 1) return true;
-        return false;
+        if (e.srv_admin_state != 0 && e.srv_time_since_last_change > 300) {
+            debug("Found downed slot older than 300 seconds")
+            return true
+        }
+        if (e.srv_admin_state & 1) {
+            debug("Found administratively down slot")
+            return true
+        }
+        return false
     })
 }
