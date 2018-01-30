@@ -2,7 +2,7 @@
   "name": "@thegrommet/haproxy-registration",
   "version": "1.0.1",
   "description": "Register and unregister hosts with haproxy",
-  "main": "index.js",
+  "bin": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
