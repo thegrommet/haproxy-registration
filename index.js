@@ -22,7 +22,15 @@ const argv = require('yargs')
         requiresArg: true,
         type: 'string'
     })
-
+    .command({
+        command: 'register',
+        description: 'Register with haproxy'
+    })
+    .command({
+        command: 'unregister',
+        description: 'Unregister with haproxy'
+    })
+    .demandCommand(1)
     .argv
 
 const ec2meta = require('aws-instance-metadata')
@@ -34,6 +42,12 @@ const net = require('net')
 const debug = require('util').debuglog('haproxy-registration')
 
 main(async function main() {
+    debug('command', argv[0])
+    if (argv._[0] == 'register') return register();
+    if (argv._[0] == 'unregister') return unregister();
+})
+
+async function register() {
     const ip = await getIP()
     
     const servers = await getServers(argv.host, argv.port, argv.backend)
@@ -49,7 +63,23 @@ main(async function main() {
         const resp2 = await haproxy(argv.host, argv.port, `set server ${argv.backend}/${slot.srv_name} state ready`)
         debug("enable server response", resp2)
     }
-})
+}
+
+async function unregister() {
+    const ip = await getIP()
+    const servers = await getServers(argv.host, argv.port, argv.backend)
+    if (servers.find(e => e.srv_addr == ip)) {
+        const slot = findActiveSlot(servers, ip)
+        if (!slot) throw new Error(`Could not find existing slot for ${ip} in backend ${argv.backend}`)
+        console.log(`unregistering ${ip} from ${slot.be_name}/${slot.srv_name}`)
+        const resp2 = await haproxy(argv.host, argv.port, `set server ${argv.backend}/${slot.srv_name} state maint`)
+        debug("enable server response", resp2)
+        const resp = await haproxy(argv.host, argv.port, `set server ${argv.backend}/${slot.srv_name} addr 0.0.0.0`)
+        debug("set server response", resp)
+    } else {
+        debug(`${ip} not registered`)
+    }
+}
 
 async function getIP() {
     if (isec2()) {
@@ -84,6 +114,16 @@ async function getServers(host, port, backend) {
     const rval = body.map(e => lodash.zipObject(header, e)).filter(e => e.be_name == backend)
     if (rval.length == 0) throw new Error(`No servers found for backend ${backend}`)
     return rval
+}
+
+function findActiveSlot(servers, ip) {
+    return servers.find(e => {
+        if (e.srv_addr == ip && (e.srv_admin_state & 1) == 0) {
+            debug("found active slot", e)
+            return true
+        }
+        return false
+    })
 }
 
 function findSlot(servers) {
