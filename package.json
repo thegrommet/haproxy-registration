@@ -1,6 +1,6 @@
 {
   "name": "@thegrommet/haproxy-registration",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Register and unregister hosts with haproxy",
   "main": "index.js",
   "scripts": {
