@@ -118,8 +118,11 @@ function findActiveSlot(servers, ip) {
 
 function findSlot(servers) {
     // Prefer an unregistered slot
-    const rval = servers.find(e => e.src_addr == '0.0.0.0')
-    if (rval) return rval
+    const rval = servers.find(e => e.srv_addr == '0.0.0.0')
+    if (rval) {
+        debug ("Found unused slot")
+        return rval
+    }
         
     // If no unregistered slots exist, choose a downed server or administratively downed slot
     return servers.find(e => {
