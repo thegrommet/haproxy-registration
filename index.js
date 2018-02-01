@@ -117,6 +117,11 @@ function findActiveSlot(servers, ip) {
 }
 
 function findSlot(servers) {
+    // Prefer an unregistered slot
+    const rval = servers.find(e => e.src_addr == '0.0.0.0')
+    if (rval) return rval
+        
+    // If no unregistered slots exist, choose a downed server or administratively downed slot
     return servers.find(e => {
         if (e.srv_admin_state != 0 && e.srv_time_since_last_change > 300) {
             debug("Found downed slot older than 300 seconds")
