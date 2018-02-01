@@ -31,8 +31,6 @@
   "homepage": "https://github.com/thegrommet/haproxy-registration#readme",
   "dependencies": {
     "async-main": "^1.0.1",
-    "aws-instance-metadata": "^2.0.0",
-    "is-ec2-machine": "^1.0.2",
     "lodash": "^4.17.4",
     "my-local-ip": "^1.0.0",
     "yargs": "^11.0.0"

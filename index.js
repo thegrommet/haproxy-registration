@@ -33,8 +33,6 @@ const argv = require('yargs')
     .demandCommand(1)
     .argv
 
-const ec2meta = require('aws-instance-metadata')
-const isec2 = require('is-ec2-machine')
 const lodash = require('lodash')
 const main = require('async-main').default
 const myLocalIP = require('my-local-ip')
@@ -48,7 +46,7 @@ main(async function main() {
 })
 
 async function register() {
-    const ip = await getIP()
+    const ip = await myLocalIP()
     
     const servers = await getServers(argv.host, argv.port, argv.backend)
     if (servers.find(e => e.srv_addr == ip)) {
@@ -66,7 +64,7 @@ async function register() {
 }
 
 async function unregister() {
-    const ip = await getIP()
+    const ip = await myLocalIP()
     const servers = await getServers(argv.host, argv.port, argv.backend)
     if (servers.find(e => e.srv_addr == ip)) {
         const slot = findActiveSlot(servers, ip)
@@ -78,14 +76,6 @@ async function unregister() {
         debug("set server response", resp)
     } else {
         debug(`${ip} not registered`)
-    }
-}
-
-async function getIP() {
-    if (isec2()) {
-        return await ec2meta('public-ipv4') || await ec2meta('local-ipv4')
-    } else {
-        return myLocalIP()
     }
 }
 
