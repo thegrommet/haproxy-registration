@@ -30,6 +30,10 @@ const argv = require('yargs')
         command: 'unregister',
         description: 'Unregister with haproxy'
     })
+    .command({
+        command: 'daemon',
+        description: 'Run as a daemon that keeps registration up to date'
+    })
     .demandCommand(1)
     .argv
 
@@ -43,7 +47,29 @@ main(async function main() {
     debug('command', argv[0])
     if (argv._[0] == 'register') return register();
     if (argv._[0] == 'unregister') return unregister();
+    if (argv._[0] == 'daemon') return daemon();
 })
+
+function wait(ms) {
+    return new Promise((y, n) => setTimeout(y, ms))
+}
+
+async function daemon() {
+    let keep = true;
+
+    function done() {
+        keep = false
+    }
+    process.on('SIGTERM', done)
+    process.on('SIGINT', done)
+    process.on('SIGQUIT', done)
+
+    while (keep) {
+        await register();
+        await wait(10000);
+    }
+    await unregister();
+}
 
 async function register() {
     const ip = await myLocalIP()
