@@ -31,8 +31,8 @@
   "homepage": "https://github.com/thegrommet/haproxy-registration#readme",
   "dependencies": {
     "async-main": "^1.0.2",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.14",
     "my-local-ip": "^1.0.0",
-    "yargs": "^11.0.0"
+    "yargs": "^11.1.0"
   }
 }
