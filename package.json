@@ -1,6 +1,6 @@
 {
   "name": "@thegrommet/haproxy-registration",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Register and unregister hosts with haproxy",
   "bin": "index.js",
   "scripts": {
@@ -32,7 +32,6 @@
   "dependencies": {
     "async-main": "^1.0.2",
     "lodash": "^4.17.15",
-    "my-local-ip": "^1.0.0",
     "yargs": "^14.0.0"
   }
 }
