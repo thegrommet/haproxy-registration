@@ -39,7 +39,6 @@ const argv = require('yargs')
 
 const lodash = require('lodash')
 const main = require('async-main').default
-const myLocalIP = require('my-local-ip')
 const net = require('net')
 const debug = require('util').debuglog('haproxy-registration')
 
@@ -72,7 +71,7 @@ async function daemon() {
 }
 
 async function register() {
-    const ip = await myLocalIP()
+    const ip = myLocalIP()
     
     const servers = await getServers(argv.host, argv.port, argv.backend)
     if (servers.find(e => e.srv_addr == ip)) {
@@ -90,7 +89,7 @@ async function register() {
 }
 
 async function unregister() {
-    const ip = await myLocalIP()
+    const ip = myLocalIP()
     const servers = await getServers(argv.host, argv.port, argv.backend)
     if (servers.find(e => e.srv_addr == ip)) {
         const slot = findActiveSlot(servers, ip)
@@ -155,4 +154,15 @@ function findSlot(servers) {
         }
         return false
     })
+}
+
+function myLocalIP() {
+    var n = require('os').networkInterfaces()
+    var ip = []
+    for(var k in n) {
+        var inter = n[k]
+        for(var j in inter)
+            if((inter[j].family === 'IPv4' || inter[j].family === 4) && !inter[j].internal)
+                return inter[j].address
+    }
 }
